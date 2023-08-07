@@ -34,9 +34,7 @@ public class PersonaController {
     @DeleteMapping("{cedula}")
     public String borrarPersona(@PathVariable("cedula") String cedula){
         // Buscamos la persona con la cédula recibida en el parámetro
-        Optional<Persona> personaAEliminar = personas.stream()
-                .filter(p -> p.getDocumento().equals(cedula))
-                .findFirst();
+        Optional<Persona> personaAEliminar = obtenerPersonaPorCedula(cedula);
 
         if (personaAEliminar.isPresent()) {
             personas.remove(personaAEliminar.get());
@@ -47,19 +45,17 @@ public class PersonaController {
     }
 
     @PutMapping("{cedula}")
-    public String actualizarPersona (@PathVariable("cedula") String cedula,@RequestBody Persona personaActualizada){
-        Optional<Persona> personaActualizar = personas.stream()
-                .filter(p -> p.getDocumento().equals(cedula))
-                .findFirst();
+    public Persona actualizarPersona (@PathVariable("cedula") String cedula,@RequestBody Persona personaActualizada){
+        Optional<Persona> personaActualizar = obtenerPersonaPorCedula(cedula);
         if (personaActualizar.isPresent()) {
             // Si encontramos la persona existente, actualizamos sus datos con la persona actualizada
             Persona persona = personaActualizar.get();
             persona.setNombre(personaActualizada.getNombre());
             persona.setApellido(personaActualizada.getApellido());
             persona.setCiudad(personaActualizada.getCiudad());
-            return "Persona actualizada exitosamente.";
+            return persona;
         } else {
-            return "Persona no encontrada.";
+            return null;
         }
     }
 }
